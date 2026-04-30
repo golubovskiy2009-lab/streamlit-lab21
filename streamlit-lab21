@@ -1,0 +1,51 @@
+import streamlit as st
+import numpy as np
+import matplotlib.pyplot as plt
+
+st.set_page_config(page_title="Streamlit Lab 21", layout="wide")
+
+st.title("📊 Аналітичний інструмент візуалізації")
+
+with st.sidebar:
+    st.header("Конфігурація")
+    data_type = st.selectbox("Тип кривої:", ["Sin", "Cos", "Exp"])
+    data_points = st.slider("Кількість вимірів", 50, 1000, 400)
+    multiplier = st.number_input("Коефіцієнт масштабу", value=1.0, step=0.5)
+    primary_color = st.color_picker("Колір лінії", "#0077FF")
+
+t = np.linspace(0, 10, data_points)
+
+if data_type == "Sin":
+    val = multiplier * np.sin(t)
+elif data_type == "Cos":
+    val = multiplier * np.cos(t)
+else:
+    val = np.exp(t * 0.2 * multiplier)
+
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.plot(t, val, color=primary_color, lw=2.5)
+ax.set_title(f"Модель: {data_type}", fontsize=14)
+ax.grid(True, linestyle="--", alpha=0.5)
+
+left_col, right_col = st.columns([3, 1])
+
+with left_col:
+    st.pyplot(fig)
+
+with right_col:
+    st.metric("Максимум", f"{np.max(val):.2f}")
+    st.metric("Мінімум", f"{np.min(val):.2f}")
+    if st.button("Очистити кеш"):
+        st.cache_data.clear()
+
+st.divider()
+
+notes = st.text_area("Нотатки дослідника:")
+if notes:
+    st.info(f"Збережений коментар: {notes}")
+
+tabs = st.tabs(["Таблиця даних", "Про програму"])
+with tabs[0]:
+    st.write(np.vstack((t, val)).T)
+with tabs[1]:
+    st.markdown("Виконано в рамках **Лабораторної роботи №21**[cite: 1].")
