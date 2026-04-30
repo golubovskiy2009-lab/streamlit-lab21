@@ -2,44 +2,38 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Streamlit Lab 21", layout="wide")
-
 def main():
-    st.title("📊 Аналітичний сервіс")
+    st.set_page_config(page_title="Data Analysis App")
+    st.title("Streamlit Data Visualizer")
     
     with st.sidebar:
-        st.header("Налаштування")
-        mode = st.selectbox("Оберіть криву", ["Sin", "Cos", "Exp"])
-        width = st.slider("Ширина", 1, 10, 5)
-        points = st.number_input("Точки", 100, 1000, 500)
-        line_hex = st.color_picker("Колір", "#FF5733")
-
-    x_data = np.linspace(0, 10, points)
+        st.header("Settings")
+        chart_type = st.selectbox("Select Function", ["Sine", "Cosine"])
+        frequency = st.slider("Frequency", 1, 20, 10)
+        line_color = st.color_picker("Pick a color", "#00f900")
     
-    if mode == "Sin":
-        y_data = np.sin(x_data * width * 0.2)
-    elif mode == "Cos":
-        y_data = np.cos(x_data * width * 0.2)
+    x = np.linspace(0, 10, 1000)
+    if chart_type == "Sine":
+        y = np.sin(x * frequency * 0.1)
     else:
-        y_data = np.exp(x_data * 0.1 * width * 0.1)
-
-    fig, ax = plt.subplots(figsize=(10, 4))
-    ax.plot(x_data, y_data, color=line_hex, linewidth=2)
-    ax.set_title(f"Графік: {mode}")
+        y = np.cos(x * frequency * 0.1)
+    
+    fig, ax = plt.subplots()
+    ax.plot(x, y, color=line_color)
+    ax.set_title(f"{chart_type} Wave")
     ax.grid(True, alpha=0.3)
-
-    col_left, col_right = st.columns([3, 1])
-    with col_left:
+    
+    col1, col2 = st.columns(2)
+    with col1:
         st.pyplot(fig)
-    with col_right:
-        st.write("**Статистика:**")
-        st.metric("Max", round(float(np.max(y_data)), 2))
-        st.metric("Min", round(float(np.min(y_data)), 2))
+    with col2:
+        st.write("Statistics:")
+        st.metric("Maximum", round(float(np.max(y)), 2))
+        st.metric("Minimum", round(float(np.min(y)), 2))
 
-    st.divider()
-    comment = st.text_input("Ваш коментар:")
-    if st.button("Надіслати"):
-        st.info(f"Збережено: {comment}")
+    user_note = st.text_input("Enter your note:")
+    if st.button("Save"):
+        st.write(f"Note saved: {user_note}")
 
 if __name__ == "__main__":
     main()
